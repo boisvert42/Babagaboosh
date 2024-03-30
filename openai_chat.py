@@ -2,6 +2,13 @@ from openai import OpenAI
 import tiktoken
 import os
 from rich import print
+import configparser
+
+# Set up secrets
+_config = configparser.ConfigParser()
+_pth = os.path.join(os.path.expanduser('~'), '.api_keys')
+_config.read(_pth)
+OPENAI_API_KEY = _config['OpenAI']['API_KEY']
 
 def num_tokens_from_messages(messages, model='gpt-4'):
   """Returns the number of tokens used by a list of messages.
@@ -20,14 +27,14 @@ def num_tokens_from_messages(messages, model='gpt-4'):
   except Exception:
       raise NotImplementedError(f"""num_tokens_from_messages() is not presently implemented for model {model}.
       #See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens.""")
-      
+
 
 class OpenAiManager:
-    
+
     def __init__(self):
         self.chat_history = [] # Stores the entire conversation
         try:
-            self.client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+            self.client = OpenAI(api_key=OPENAI_API_KEY)
         except TypeError:
             exit("Ooops! You forgot to set OPENAI_API_KEY in your environment!")
 
@@ -82,7 +89,7 @@ class OpenAiManager:
         openai_answer = completion.choices[0].message.content
         print(f"[green]\n{openai_answer}\n")
         return openai_answer
-   
+
 
 if __name__ == '__main__':
     openai_manager = OpenAiManager()
@@ -99,4 +106,3 @@ if __name__ == '__main__':
     while True:
         new_prompt = input("\nNext question? \n\n")
         openai_manager.chat_with_history(new_prompt)
-        

@@ -2,6 +2,14 @@ import time
 import azure.cognitiveservices.speech as speechsdk
 import keyboard
 import os
+import configparser
+
+# Set up secrets
+_config = configparser.ConfigParser()
+_pth = os.path.join(os.path.expanduser('~'), '.api_keys')
+_config.read(_pth)
+AZURE_TTS_KEY = _config['Azure']['TTS_KEY']
+AZURE_TTS_REGION = config['Azure']['TTS_REGION']
 
 class SpeechToTextManager:
     azure_speechconfig = None
@@ -12,14 +20,14 @@ class SpeechToTextManager:
         # Creates an instance of a speech config with specified subscription key and service region.
         # Replace with your own subscription key and service region (e.g., "westus").
         try:
-            self.azure_speechconfig = speechsdk.SpeechConfig(subscription=os.getenv('AZURE_TTS_KEY'), region=os.getenv('AZURE_TTS_REGION'))
+            self.azure_speechconfig = speechsdk.SpeechConfig(subscription=AZURE_TTS_KEY, region=AZURE_TTS_REGION)
         except TypeError:
             exit("Ooops! You forgot to set AZURE_TTS_KEY or AZURE_TTS_REGION in your environment!")
-        
+
         self.azure_speechconfig.speech_recognition_language="en-US"
-        
+
     def speechtotext_from_mic(self):
-        
+
         self.azure_audioconfig = speechsdk.audio.AudioConfig(use_default_microphone=True)
         self.azure_speechrecognizer = speechsdk.SpeechRecognizer(speech_config=self.azure_speechconfig, audio_config=self.azure_audioconfig)
 
@@ -93,7 +101,7 @@ class SpeechToTextManager:
         # Start processing the file
         print("Now processing the audio file...")
         self.azure_speechrecognizer.start_continuous_recognition()
-        
+
         # We wait until stop_cb() has been called above, because session either stopped or canceled
         while not done:
             time.sleep(.5)
@@ -110,7 +118,7 @@ class SpeechToTextManager:
         self.azure_speechrecognizer = speechsdk.SpeechRecognizer(speech_config=self.azure_speechconfig)
 
         done = False
-        
+
         # Optional callback to print out whenever a chunk of speech is being recognized. This gets called basically every word.
         #def recognizing_cb(evt: speechsdk.SpeechRecognitionEventArgs):
         #    print('RECOGNIZING: {}'.format(evt))
@@ -151,7 +159,7 @@ class SpeechToTextManager:
                 print("\nEnding azure speech recognition\n")
                 self.azure_speechrecognizer.stop_continuous_recognition_async()
                 break
-            
+
             # METHOD 2 - User must type "stop" into cmd window
             #print('type "stop" then enter when done')
             #stop = input()
@@ -174,7 +182,7 @@ class SpeechToTextManager:
 if __name__ == '__main__':
 
     TEST_FILE = "D:\Video Editing\Misc - Ai teaches me to pass History Exam\Audio\Misc - Ai teaches me to pass History Exam - VO 1.wav"
-    
+
     speechtotext_manager = SpeechToTextManager()
 
     while True:
