@@ -9,7 +9,7 @@ _config = configparser.ConfigParser()
 _pth = os.path.join(os.path.expanduser('~'), '.api_keys')
 _config.read(_pth)
 AZURE_TTS_KEY = _config['Azure']['TTS_KEY']
-AZURE_TTS_REGION = config['Azure']['TTS_REGION']
+AZURE_TTS_REGION = _config['Azure']['TTS_REGION']
 
 class SpeechToTextManager:
     azure_speechconfig = None
@@ -111,7 +111,7 @@ class SpeechToTextManager:
         self.azure_speechrecognizer.stop_continuous_recognition()
 
         final_result = " ".join(all_results).strip()
-        print(f"\n\nHeres the result we got from contiuous file read!\n\n{final_result}\n\n")
+        print(f"\n\nHere's the result we got from contiuous file read!\n\n{final_result}\n\n")
         return final_result
 
     def speechtotext_from_mic_continuous(self, stop_key='p'):
