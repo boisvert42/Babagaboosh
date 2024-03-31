@@ -90,7 +90,7 @@ class OpenAiManager:
         print(f"[green]\n{openai_answer}\n")
         return openai_answer
 
-
+#%%
 if __name__ == '__main__':
     openai_manager = OpenAiManager()
 
