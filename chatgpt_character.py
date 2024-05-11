@@ -1,6 +1,6 @@
 import time
 import keyboard
-from rich import print
+import rich
 from azure_speech_to_text import SpeechToTextManager
 from openai_chat import OpenAiManager
 #from eleven_labs import ElevenLabsManager
@@ -9,12 +9,12 @@ from audio_player import AudioManager
 from azure_text_to_speech import AzureTTSManager
 import pygame
 
-#ELEVENLABS_VOICE = "Pointboat" # Replace this with the name of whatever voice you have created on Elevenlabs
+ELEVENLABS_VOICE = "Dorothy" # Replace this with the name of whatever voice you have created on Elevenlabs
 AZURE_VOICE = "en-US-JennyNeural"
 
 BACKUP_FILE = "ChatHistoryBackup.txt"
 
-#elevenlabs_manager = ElevenLabsManager()
+elevenlabs_manager = ElevenLabsManager()
 tts_manager = AzureTTSManager()
 obswebsockets_manager = OBSWebsocketsManager()
 speechtotext_manager = SpeechToTextManager()
@@ -58,29 +58,27 @@ While responding as Dorothy, you must obey the following rules:
 2) Always stay in character, no matter what.
 3) You have been stealing from the company and are bad at keeping a secret about it. Occasionally you let something about that slip in an overly flirty way.
 4) Occasionally apologize for how often you are late to work.
-5) Frequently reference a past job that you had which has no similarity to your current job. This job should be a different one each time you bring one up.
+5) Occasionally reference a past job that you had which has no similarity to your current job. This job should be a different one each time you bring one up.
 6) Occasionally brag about how good you are word games.
 7) Sometimes talk about other word games and how much better they are than this one.
-8) You only speak in iambic pentameter.
-9) You have a weird roommate that you think is spying on you, which is why you are whispering all the time.
 
 Okay, let the conversation begin!'''}
 openai_manager.chat_history.append(FIRST_SYSTEM_MESSAGE)
 
-print("[green]Starting the loop, press F4 to begin")
+rich.print("[green]Starting the loop, press F4 to begin")
 while True:
     # Wait until user presses "f4" key
     if keyboard.read_key() != "f4":
         time.sleep(0.1)
         continue
 
-    print("[green]User pressed F4 key! Now listening to your microphone:")
+    rich.print("[green]User pressed F4 key! Now listening to your microphone:")
 
     # Get question from mic
     mic_result = speechtotext_manager.speechtotext_from_mic_continuous()
 
     if mic_result == '':
-        print("[red]Did not receive any input from your microphone!")
+        rich.print("[red]Did not receive any input from your microphone!")
         continue
 
     # Send question to OpenAi
@@ -91,18 +89,18 @@ while True:
         file.write(str(openai_manager.chat_history))
 
     # Send it to 11Labs to turn into cool audio
-    #elevenlabs_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
+    tts_output = elevenlabs_manager.text_to_audio(openai_result, ELEVENLABS_VOICE, False)
 
-    # Instead, send to Azure
-    azure_output = tts_manager.text_to_audio(openai_result, AZURE_VOICE, voice_style='whispering')
+    # Or, send to Azure
+    #tts_output = tts_manager.text_to_audio(openai_result, AZURE_VOICE, voice_style='whispering')
 
     # Enable the picture of Pajama Sam in OBS
     obswebsockets_manager.set_source_visibility("Browser Game", "Assistant", True)
 
     # Play the mp3 file
-    audio_manager.play_audio(azure_output, True, True, True)
+    audio_manager.play_audio(tts_output, True, True, True)
 
-    # Disable Pajama Sam pic in OBS
+    # Disable pic in OBS
     obswebsockets_manager.set_source_visibility("Browser Game", "Assistant", False)
 
-    print("[green]\n!!!!!!!\nFINISHED PROCESSING DIALOGUE.\nREADY FOR NEXT INPUT\n!!!!!!!\n")
+    rich.print("[green]\n!!!!!!!\nFINISHED PROCESSING DIALOGUE.\nREADY FOR NEXT INPUT\n!!!!!!!\n")
