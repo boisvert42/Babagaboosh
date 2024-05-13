@@ -75,7 +75,7 @@ While responding as Dorothy, you must obey the following rules:
 Okay, let the conversation begin!'''}
 openai_manager.chat_history.append(FIRST_SYSTEM_MESSAGE)
 
-rich.print("[green]Starting the loop, press F4 to begin")
+rich.print("[green]Starting the loop, press F4 to begin, `p` to end")
 while True:
     # Wait until user presses "f4" key
     if keyboard.read_key() != "f4":
